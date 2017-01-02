@@ -1,0 +1,8 @@
+#wpbody{
+   /* background-color: red;*/
+}
+.beauty-general-form input[type="text"]{
+    width: 400px;
+    height:40px;
+    border-radius: 5px;
+}
