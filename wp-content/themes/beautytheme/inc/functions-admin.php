@@ -13,6 +13,8 @@ function beauty_add_admin_page(){
 
 	add_submenu_page('beauty_options', 'Beauty css options', 'Пользовательские стили', 'manage_options', 'beauty_options_css', 'beauty_submenu_page_callback');
 
+	add_submenu_page('beauty_options', 'Cообщения пользователей', 'Cообщения пользователей', 'manage_options', 'beauty_options_theme_messages', 'beauty_theme_options_messages');
+
 	//activate custom settings
 	add_action('admin_init', 'beauty_custom_settings');
 }
@@ -26,6 +28,14 @@ function beauty_theme_create_page(){
 
 function beauty_theme_options_page(){
 	require_once (get_template_directory() . '/inc/templates/beauty-theme-support.php');
+}
+
+function beauty_theme_options_messages(){
+	require_once (get_template_directory() . '/inc/templates/beauty-messages-support.php');
+}
+
+function beauty_submenu_page_callback(){
+	require_once (get_template_directory() . '/inc/templates/beauty-custom-css.php');
 }
 
 function beauty_custom_settings(){
@@ -59,6 +69,55 @@ function beauty_custom_settings(){
 	add_settings_field('custom-header', 'Опции шапки', 'beauty_custom_header', 'beauty_options_theme', 'beauty_theme_options_support');
 
 	add_settings_field('custom-background', 'Опции фона', 'beauty_custom_background', 'beauty_options_theme', 'beauty_theme_options_support');
+
+
+	//Contact Form Options
+	register_setting('beauty_contact_options', 'activate');
+
+	add_settings_section('beauty-theme-contact-support', 'Форма обратной связи', 'beauty_theme_contact_support', 'beauty_options_theme_messages');
+
+	add_settings_field('beauty-theme-contact', 'Активировать контактную форму', 'beauty_custom_contact', 'beauty_options_theme_messages', 'beauty-theme-contact-support');
+
+
+	//Custom CSS Options
+	register_setting('beauty-custom-css-options', 'beauty_css', 'beauty_sanitize_css');
+
+	add_settings_section('beauty-custom-css-section', 'Настройка пользовательских стилей', 'beauty_custom_css_section_callback', 'beauty_options_css');
+
+	add_settings_field('custom-css', 'Введите свои стили', 'beauty_custom_css_callback', 'beauty_options_css', 'beauty-custom-css-section');
+
+}
+
+//Custom css options
+function beauty_custom_css_section_callback(){
+	echo 'Настройте свою тему при помощи собственных стилей';
+}
+
+function beauty_custom_css_callback(){
+	$css = get_option('beauty_css');
+	$css = ( empty($css) ? '/*Theme Custom css*/' : $css);
+	?>
+	<div id="editor"><?php echo $css?></div>
+	<textarea id="beauty_css" name="beauty_css" style="display:none; visibility:hidden"><?php echo $css?></textarea>
+	<?php
+	write_custom_css();
+}
+//
+function beauty_sanitize_css($input){
+	$output = esc_textarea($input);
+	return $output;
+}
+
+//Contacts support
+function beauty_theme_contact_support(){
+	echo 'Измените настройки';
+}
+
+function beauty_custom_contact(){
+	$options = get_option('activate');
+	$checked = ($options == 1 ? 'checked' : '');
+	$otput = '<label><input type="checkbox" id="activate" name="activate" value="1" '. $checked .'></label><br>';
+	echo $otput;
 }
 
 //Post formats callback function
@@ -99,11 +158,6 @@ function beauty_post_formats(){
 	}
 	echo $otput;
 }
-
-
-
-
-
 
 
 function beauty_sidebar_options(){
@@ -229,6 +283,3 @@ function sanitize_twitter( $input ){
 	return $output;
 }
 
-function beauty_submenu_page_callback(){
-
-}
